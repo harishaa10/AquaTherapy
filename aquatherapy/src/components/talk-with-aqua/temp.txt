@@ -1,0 +1,60 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import styles from './styles';
+
+const TalkWithAqua = () => {
+  const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState<Array<string>>([]);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const handleSend = () => {
+    if (inputValue.trim() === '') {
+      return;
+    }
+
+    setMessages([...messages, inputValue.trim()]);
+    setInputValue('');
+  };
+
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]);
+
+  return (
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.chatBox} ref={scrollViewRef}>
+        {messages.map((message, index) => {
+          const isAqua = index % 2 === 0;
+
+          return (
+            <View
+              key={index}
+              style={isAqua ? styles.aquaMessageContainer : styles.messageContainer}
+            >
+              <Text style={isAqua ? styles.aquaMessageText : styles.messageText}>{message}</Text>
+            </View>
+          );
+        })}
+      </ScrollView>
+
+      <View style={styles.chatInputContainer}>
+        <TextInput
+          style={styles.chatInput}
+          placeholder="Type your message here..."
+          placeholderTextColor="#A9A9A9"
+          value={inputValue}
+          onChangeText={setInputValue}
+          onSubmitEditing={handleSend}
+        />
+
+        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+          <Text style={styles.sendButtonText}>Send</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+export default TalkWithAqua;
